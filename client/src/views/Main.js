@@ -1,49 +1,46 @@
-import { fetchCall } from '../services/fetchSvc';
-function Main() {
+import DynamicList from './components/DynamicList';
+import { useState } from 'react';
 
-    const handleClick = () => {
-        fetchCall('api', {}, 'post')
-            .then(data => window.alert(data))
-            .catch(error => window.alert(error));
-    }
+function Main() {
+    const [stopPhrasesList, setStopPhrasesList] = useState([]);
+    const [numberOfResponses, setNumberOfResponses] = useState(1);
+    const [frequencyPenalty, setFrequencyPenalty] = useState(0);
+    const [temperature, setTemperature] = useState(1);
+    const [topP, setTopP] = useState(1);
+    const [presencePenalty, setPresencePenalty] = useState(0);
+    const [seed, setSeed] = useState('');
+    const [logprobs, setLogprobs] = useState(false);
+    const [topLogprobs, setTopLogprobs] = useState(0);
+
+
+    const messages = [
+        {
+            role: 'system',
+            content: 'You are a university lecturer, teaching Persian litrature. Do not break character, reply as a the Persian professor.',
+            name: 'Sue'
+        },
+        {
+            role: 'user',
+            content: 'Hi, who is author of Shahnameh?',
+            name: 'Babak'
+        },
+        {
+            role: 'assistant',
+            content: 'Shahnameh is a long epic poem written by the Persian poet Ferdowsi.',
+            name: 'Sue'
+        },
+        {
+            role: 'user',
+            content: 'Who is the original author of the material used by Ferdowsi for Shahnameh?',
+            name: 'Babak'
+        },
+    ]
 
     return (
         <div>
             <div className="container">
                 <div className="container p-2">
-                    <div><h1>Titre</h1></div>
-                    <div>Sous<a>-titre</a> at <span>08:21pm, July 13, 2001</span></div>
-                </div>
-                <div className="container p-2">
-                    <div className="btn-group" role="group" aria-label="Button group with nested dropdown">
-                        <div className="btn-group" role="group">
-                            <button type="button" className="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                Try me
-                            </button>
-                            <ul className="dropdown-menu">
-                                <li><a className="dropdown-item" onClick={handleClick}>Hello World</a></li>
-                                <li><a className="dropdown-item" href="#">Dropdown link</a></li>
-                            </ul>
-                        </div>
-                        <div className="btn-group" role="group">
-                            <button type="button" className="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </button>
-                            <ul className="dropdown-menu">
-                                <li><a className="dropdown-item" href="#">Dropdown link</a></li>
-                                <li><a className="dropdown-item" href="#">Dropdown link</a></li>
-                            </ul>
-                        </div>
-                        <div className="btn-group" role="group">
-                            <button type="button" className="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </button>
-                            <ul className="dropdown-menu">
-                                <li><a className="dropdown-item" href="#">Dropdown link</a></li>
-                                <li><a className="dropdown-item" href="#">Dropdown link</a></li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div><h1>Chat</h1></div>
                 </div>
             </div>
 
@@ -51,143 +48,85 @@ function Main() {
                 <div className="accordion accordion-flush" id="accordionPanelsStayOpenExample">
                     <div className="accordion-item">
                         <h2 className="accordion-header">
-                            <button className="fw-bolder accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Accordion Item #1
-                            </button>
-                        </h2>
-                        <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show">
-                            <div className="accordion-body">
-                                <table className="table table-striped-columns">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">First</th>
-                                            <th scope="col">Last</th>
-                                            <th scope="col">Handle</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>Mark</td>
-                                            <td>Otto</td>
-                                            <td>@mdo</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">2</th>
-                                            <td>Jacob</td>
-                                            <td>Thornton</td>
-                                            <td>@fat</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">3</th>
-                                            <td>Larry the Bird</td>
-                                            <td>@twitter</td>
-                                            <td>@dude</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="accordion-item">
-                        <h2 className="accordion-header">
                             <button className="fw-bolder accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                                Accordion Item #2
+                                Parameters
                             </button>
                         </h2>
                         <div id="panelsStayOpen-collapseTwo" className="accordion-collapse collapse">
                             <div className="accordion-body">
                                 <div className="input-group mb-3">
-                                    <span className="input-group-text" id="basic-addon1">@</span>
-                                    <input type="text" className="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" />
+                                    <span className="input-group-text" id="n">Number of Responses</span>
+                                    <input type="number" className="form-control" placeholder="n" aria-label="N" aria-describedby="n" defaultValue="1" min="1" max="5" step="1" value={numberOfResponses} onChange={e => setNumberOfResponses(e.target.value)} />
                                 </div>
 
                                 <div className="input-group mb-3">
-                                    <input type="text" className="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2" />
-                                    <span className="input-group-text" id="basic-addon2">@example.com</span>
-                                </div>
-
-                                <div className="mb-3">
-                                    <label htmlFor="basic-url" className="form-label">Your vanity URL</label>
-                                    <div className="input-group">
-                                        <span className="input-group-text" id="basic-addon3">https://example.com/users/</span>
-                                        <input type="text" className="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" />
-                                    </div>
-                                    <div className="form-text" id="basic-addon4">Example help text goes outside the input group.</div>
+                                    <span className="input-group-text" id="frequency_penalty">Frequency Penalty</span>
+                                    <input type="number" className="form-control" placeholder="Frequency Penalty" aria-label="Frequency Penalty" aria-describedby="frequency_penalty" defaultValue="0" min="-2" max="2" step="0.1" value={frequencyPenalty} onChange={e => setFrequencyPenalty(e.target.value)} />
                                 </div>
 
                                 <div className="input-group mb-3">
-                                    <span className="input-group-text">$</span>
-                                    <input type="text" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                    <span className="input-group-text">.00</span>
+                                    <span className="input-group-text" id="temperature">Temprature</span>
+                                    <input type="number" className="form-control" placeholder="Temperature" aria-label="Temperature" aria-describedby="temperature" defaultValue="1" min="0" max="1" step="0.1" value={temperature} onChange={e => setTemperature(e.target.value)} />
                                 </div>
 
                                 <div className="input-group mb-3">
-                                    <input type="text" className="form-control" placeholder="Username" aria-label="Username" />
-                                    <span className="input-group-text">@</span>
-                                    <input type="text" className="form-control" placeholder="Server" aria-label="Server" />
+                                    <span className="input-group-text" id="top_p">Top P</span>
+                                    <input type="number" className="form-control" placeholder="Top P" aria-label="Top P" aria-describedby="top_p" defaultValue="1" min="0" max="1" step="0.1" value={topP} onChange={e => setTopP(e.target.value)} />
                                 </div>
 
-                                <div className="input-group">
-                                    <span className="input-group-text">With textarea</span>
-                                    <textarea className="form-control" aria-label="With textarea"></textarea>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text" id="presence_penalty">Presence Penalty</span>
+                                    <input type="number" className="form-control" placeholder="Presence Penalty" aria-label="Presence Penalty" aria-describedby="presence_penalty" defaultValue="0" min="-2" max="2" step="0.1" value={presencePenalty} onChange={e => setPresencePenalty(e.target.value)} />
                                 </div>
+
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text" id="seed">Seed</span>
+                                    <input type="text" className="form-control" placeholder="Seed" aria-label="Seed" aria-describedby="seed" length="30" value={seed} onChange={e => setSeed(e.target.value)} />
+                                </div>
+
+                                <div className="input-group mb-3">
+                                    <DynamicList name="Stop" valueList={stopPhrasesList} setValueList={setStopPhrasesList} />
+                                </div>
+
+                                <div className="input-group mb-3 form-check">
+                                    <input className="form-check-input" type="checkbox" id="logprobs" value={logprobs} onChange={e => setLogprobs(e.target.checked)} />
+                                    <label className="form-check-label" for="logprobs">
+                                        &nbsp;Log Probs
+                                    </label>
+                                </div>
+
+                                {logprobs &&
+                                    <div className="input-group mb-3">
+                                        <span className="input-group-text" id="top_logprobs">Top Log Probs</span>
+                                        <input type="number" className="form-control" placeholder="Top Log Probs" aria-label="Top Log Probs" aria-describedby="top_logprobs" defaultValue="0" min="0" max="20" step="1" value={topLogprobs} onChange={e => setTopLogprobs(e.target.value)} />
+                                    </div>}
                             </div>
                         </div>
                     </div>
                     <div className="accordion-item">
                         <h2 className="accordion-header">
-                            <button className="fw-bolder accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                                Accordion Item #3
+                            <button className="fw-bolder accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                Chat
                             </button>
                         </h2>
-                        <div id="panelsStayOpen-collapseThree" className="accordion-collapse collapse">
+                        <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show">
                             <div className="accordion-body">
-                                <div className="input-group mb-3">
-                                    <div className="input-group-text">
-                                        <input className="form-check-input mt-0" type="checkbox" value="" aria-label="Checkbox for following text input" />
-                                    </div>
-                                    <input type="text" className="form-control" aria-label="Text input with checkbox" />
-                                </div>
-
-                                <div className="input-group">
-                                    <div className="input-group-text">
-                                        <input className="form-check-input mt-0" type="radio" value="" aria-label="Radio button for following text input" />
-                                    </div>
-                                    <input type="text" className="form-control" aria-label="Text input with radio button" />
-                                </div>
-                                <div className="input-group mb-3">
-                                    <button className="btn btn-outline-secondary" type="button" id="button-addon1">Button</button>
-                                    <input type="text" className="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" />
-                                </div>
-
-                                <div className="input-group mb-3">
-                                    <input type="text" className="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2" />
-                                    <button className="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
-                                </div>
-
-                                <div className="input-group mb-3">
-                                    <button className="btn btn-outline-secondary" type="button">Button</button>
-                                    <button className="btn btn-outline-secondary" type="button">Button</button>
-                                    <input type="text" className="form-control" placeholder="" aria-label="Example text with two button addons" />
-                                </div>
-
-                                <div className="input-group">
-                                    <input type="text" className="form-control" placeholder="Recipient's username" aria-label="Recipient's username with two button addons" />
-                                    <button className="btn btn-outline-secondary" type="button">Button</button>
-                                    <button className="btn btn-outline-secondary" type="button">Button</button>
-                                </div>
-                                <div className="input-group mb-3">
-                                    <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
-                                    <ul className="dropdown-menu">
-                                        <li><a className="dropdown-item" href="#">Action</a></li>
-                                        <li><a className="dropdown-item" href="#">Another action</a></li>
-                                        <li><a className="dropdown-item" href="#">Something else here</a></li>
-                                        <li><hr className="dropdown-divider" /></li>
-                                        <li><a className="dropdown-item" href="#">Separated link</a></li>
-                                    </ul>
-                                    <input type="text" className="form-control" aria-label="Text input with dropdown button" />
+                                <div className="container border overflow-auto" style={{ height: 550, paddingTop: 5 }}>
+                                    {messages.filter(message => message.role !== 'system').map((message, idx) => (
+                                        <>
+                                            <div className={`d-flex ${message.role === 'assistant' ? 'justify-content-start' : 'justify-content-end'}`}><span className="fw-bold">{message.name}</span></div>
+                                            <div key={idx} className={`d-flex ${message.role === 'assistant' ? 'justify-content-start' : 'justify-content-end'}`}>
+                                                <div className="d-inline-flex">
+                                                    <div className="card">
+                                                        <div className="card-body">
+                                                            {`${message.content}`}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br />
+                                        </>
+                                    ))}
                                 </div>
                             </div>
                         </div>

@@ -43,6 +43,10 @@ app.use(async (ctx, next) => {
 });
 
 router.post('/api', async (ctx) => {
+
+  ctx.body = ctx.request.body;
+  return;
+
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
@@ -103,13 +107,6 @@ router.post('/api', async (ctx) => {
       console.log("API response: " + api_reponse);
       ctx.body = { api_reponse, chunks, stream };
     }*/
-});
-
-router.get('/call-api/:param', async (ctx, next) => {
-  console.log(`call-api route with paramter: ${ctx.params.param}`);
-  await routeHandler('call-api', {
-    "pParam": ctx.params.param,
-  }, ctx);
 });
 
 app.use(router.routes());
