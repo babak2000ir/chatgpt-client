@@ -47,34 +47,34 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
                             {collapseEdit ?
                                 <p>{`${message.content}`}</p>
                                 : <>
-                                    <div class="form-floating input-group">
-                                        <textarea class="form-control mb-1" id="textArea" rows="3" value={textAreaValue} onChange={e => setTextAreaValue(e.target.value)} style={{ height: '100px' }}></textarea>
-                                        <button class="btn btn-secondary" type="button" id="button-addon2">Send</button>
+                                    <div className="form-floating input-group">
+                                        <textarea className="form-control mb-1" id="textArea" rows="3" value={textAreaValue} onChange={e => setTextAreaValue(e.target.value)} style={{ height: '100px' }}></textarea>
+                                        <button className="btn btn-secondary" type="button" id="button-addon2">Send</button>
                                     </div>
                                 </>}
-                            <div class="d-flex flex-row">
-                                <div class="d-flex me-auto">
-                                    <div class="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={handleEditButton}>
-                                        <i class="bi bi-pen"></i>
+                            <div className="d-flex flex-row">
+                                <div className="d-flex me-auto">
+                                    <div className="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={handleEditButton}>
+                                        <i className="bi bi-pen"></i>
                                     </div>
                                 </div>
 
                                 {message.details &&
-                                    <div class="d-flex">
-                                        <div class="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={() => setCollapseDetails(!collapseDetails)}>
-                                            <i class="bi bi-three-dots-vertical"></i>
+                                    <div className="d-flex">
+                                        <div className="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={() => setCollapseDetails(!collapseDetails)}>
+                                            <i className="bi bi-three-dots-vertical"></i>
                                         </div>
                                     </div>}
                                 {message.role !== 'system' &&
-                                    <div class="d-flex">
-                                        <div class="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={() => handleDeleteButton()}>
-                                            <i class="bi bi-trash"></i>
+                                    <div className="d-flex">
+                                        <div className="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={() => handleDeleteButton()}>
+                                            <i className="bi bi-trash"></i>
                                         </div>
                                     </div>}
                             </div>
                         </div>
                         {message.details && !collapseDetails &&
-                            <div class="card-footer">
+                            <div className="card-footer">
                                 <JSONTree data={message.details} theme={defaultTheme} invertTheme={false} />
                             </div>}
                     </div>

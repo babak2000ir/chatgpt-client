@@ -16,16 +16,16 @@ function DynamicList({ name, valueList, setValueList }) {
 
     return (
         <>
-            <div class="form-group">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder={name} aria-label="Add 'Stop tokens'" aria-describedby={name} value={textBoxValue} onChange={e => setTextBoxValue(e.target.value)} onKeyUp={e => e.key === 'Enter' ? addValue() : ""} />
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" onClick={addValue}>Add</button>
+            <div className="form-group">
+                <div className="input-group">
+                    <input type="text" className="form-control" placeholder={name} aria-label="Add 'Stop tokens'" aria-describedby={name} value={textBoxValue} onChange={e => setTextBoxValue(e.target.value)} onKeyUp={e => e.key === 'Enter' ? addValue() : ""} />
+                    <div className="input-group-append">
+                        <button className="btn btn-outline-secondary" type="button" onClick={addValue}>Add</button>
                     </div>
                 </div>
-                <ul class="list-group">
+                <ul className="list-group">
                     {valueList.map((value, idx) => (
-                        <li key={idx} href="#" class="list-group-item list-group-item-action">{value}<span><button type="button" class="btn-close float-end" aria-label="Close" onClick={() => removeValue(value)}></button></span></li>
+                        <li key={idx} href="#" className="list-group-item list-group-item-action">{value}<span><button type="button" className="btn-close float-end" aria-label="Close" onClick={() => removeValue(value)}></button></span></li>
                     ))}
                 </ul>
             </div>

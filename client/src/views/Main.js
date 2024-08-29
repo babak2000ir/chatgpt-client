@@ -96,27 +96,27 @@ function Main() {
                             <div className="accordion-body">
                                 <div className="input-group mb-3">
                                     <span className="input-group-text" id="n">Number of Responses</span>
-                                    <input type="number" className="form-control" placeholder="n" aria-label="N" aria-describedby="n" defaultValue="1" min="1" max="5" step="1" value={numberOfResponses} onChange={e => setNumberOfResponses(e.target.value)} />
+                                    <input type="number" className="form-control" placeholder="n" aria-label="N" aria-describedby="n" min="1" max="5" step="1" value={numberOfResponses} onChange={e => setNumberOfResponses(e.target.value)} />
                                 </div>
 
                                 <div className="input-group mb-3">
                                     <span className="input-group-text" id="frequency_penalty">Frequency Penalty</span>
-                                    <input type="number" className="form-control" placeholder="Frequency Penalty" aria-label="Frequency Penalty" aria-describedby="frequency_penalty" defaultValue="0" min="-2" max="2" step="0.1" value={frequencyPenalty} onChange={e => setFrequencyPenalty(e.target.value)} />
+                                    <input type="number" className="form-control" placeholder="Frequency Penalty" aria-label="Frequency Penalty" aria-describedby="frequency_penalty" min="-2" max="2" step="0.1" value={frequencyPenalty} onChange={e => setFrequencyPenalty(e.target.value)} />
                                 </div>
 
                                 <div className="input-group mb-3">
                                     <span className="input-group-text" id="temperature">Temprature</span>
-                                    <input type="number" className="form-control" placeholder="Temperature" aria-label="Temperature" aria-describedby="temperature" defaultValue="1" min="0" max="1" step="0.1" value={temperature} onChange={e => setTemperature(e.target.value)} />
+                                    <input type="number" className="form-control" placeholder="Temperature" aria-label="Temperature" aria-describedby="temperature" min="0" max="1" step="0.1" value={temperature} onChange={e => setTemperature(e.target.value)} />
                                 </div>
 
                                 <div className="input-group mb-3">
                                     <span className="input-group-text" id="top_p">Top P</span>
-                                    <input type="number" className="form-control" placeholder="Top P" aria-label="Top P" aria-describedby="top_p" defaultValue="1" min="0" max="1" step="0.1" value={topP} onChange={e => setTopP(e.target.value)} />
+                                    <input type="number" className="form-control" placeholder="Top P" aria-label="Top P" aria-describedby="top_p" min="0" max="1" step="0.1" value={topP} onChange={e => setTopP(e.target.value)} />
                                 </div>
 
                                 <div className="input-group mb-3">
                                     <span className="input-group-text" id="presence_penalty">Presence Penalty</span>
-                                    <input type="number" className="form-control" placeholder="Presence Penalty" aria-label="Presence Penalty" aria-describedby="presence_penalty" defaultValue="0" min="-2" max="2" step="0.1" value={presencePenalty} onChange={e => setPresencePenalty(e.target.value)} />
+                                    <input type="number" className="form-control" placeholder="Presence Penalty" aria-label="Presence Penalty" aria-describedby="presence_penalty" min="-2" max="2" step="0.1" value={presencePenalty} onChange={e => setPresencePenalty(e.target.value)} />
                                 </div>
 
                                 <div className="input-group mb-3">
@@ -130,7 +130,7 @@ function Main() {
 
                                 <div className="input-group mb-3 form-check">
                                     <input className="form-check-input" type="checkbox" id="logprobs" value={logprobs} onChange={e => setLogprobs(e.target.checked)} />
-                                    <label className="form-check-label" for="logprobs">
+                                    <label className="form-check-label" htmlFor="logprobs">
                                         &nbsp;Log Probs
                                     </label>
                                 </div>
@@ -138,7 +138,7 @@ function Main() {
                                 {logprobs &&
                                     <div className="input-group mb-3">
                                         <span className="input-group-text" id="top_logprobs">Top Log Probs</span>
-                                        <input type="number" className="form-control" placeholder="Top Log Probs" aria-label="Top Log Probs" aria-describedby="top_logprobs" defaultValue="0" min="0" max="20" step="1" value={topLogprobs} onChange={e => setTopLogprobs(e.target.value)} />
+                                        <input type="number" className="form-control" placeholder="Top Log Probs" aria-label="Top Log Probs" aria-describedby="top_logprobs" min="0" max="20" step="1" value={topLogprobs} onChange={e => setTopLogprobs(e.target.value)} />
                                     </div>}
                             </div>
                         </div>
@@ -174,10 +174,10 @@ function Main() {
                                     )}
                                 </div>
                                 <div className="container border mt-1">
-                                    <label for="textArea" class="form-label">Your Message:</label>
-                                    <div class="input-group">
-                                        <textarea class="form-control mb-1" id="textArea" rows="3" value={message} onChange={e => setMessage(e.target.value)} onKeyUp={e => e.key === 'Enter' ? handleSendMessage() : ""}></textarea>
-                                        <button class="btn btn-secondary" type="button" id="button-addon2" onClick={handleSendMessage}>Send</button>
+                                    <label htmlFor="textArea" className="form-label">Your Message:</label>
+                                    <div className="input-group">
+                                        <textarea className="form-control mb-1" id="textArea" rows="3" value={message} onChange={e => setMessage(e.target.value)} onKeyUp={e => e.key === 'Enter' ? handleSendMessage() : ""}></textarea>
+                                        <button className="btn btn-secondary" type="button" id="button-addon2" onClick={handleSendMessage}>Send</button>
                                     </div>
                                 </div>
                             </div>
