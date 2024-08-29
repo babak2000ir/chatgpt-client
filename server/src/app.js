@@ -43,57 +43,27 @@ app.use(async (ctx, next) => {
 });
 
 router.post('/api', async (ctx) => {
-
-  ctx.body = ctx.request.body;
-  return;
-
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
   const response = await openai.chat.completions.create({
+    ...ctx.request.body,
     model: process.env.OPENAI_MODEL,
-    frequency_penalty: 0, //between -2.0 and 2.0 - decrease repeat
-    temperature: 1, //between 0 and 1 - randomness
-    top_p: 1, //between 0 and 1 - nucleus sampling
-    logprobs: false,
-    top_logprobs: null, //0 to 20
-    n: 1, //number of replies
-    presence_penalty: 0, //between -2 and 2 increases the probability of new topics
-    seed: null, //system_fingerprint
-    stop: [], //["world",...]
     response_format: {
       type: 'text'
     },
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a university lecturer, teaching Persian litrature. Do not break character, reply as a the Persian professor.',
-        name: 'Sue'
-      },
-      {
-        role: 'user',
-        content: 'Hi, who is author of Shahnameh?',
-        name: 'Babak'
-      },
-      {
-        role: 'assistant', 
-        content: 'Shahnameh is a long epic poem written by the Persian poet Ferdowsi.',
-        name: 'Sue'
-      },
-      {
-        role: 'user',
-        content: 'Who is the original author of the material used by Ferdowsi for Shahnameh?',
-        name: 'Babak'
-      },
-    ],
     stream: false,
   }).withResponse()
 
   //console.log("API response: " + api_reponse);
+
+  //put all key values of the headers in an array
+  const headers = Array.from(response.response.headers.entries()).map(([key, value]) => ({ key, value }));
+
   ctx.body = {
-    headers: response.response.headers.entries(),
-    response,
+    headers,
+    response: response.data,
     reply: response.data.choices?.[0]?.message.content || ""
   };
   /*   try {

@@ -1,5 +1,7 @@
 import DynamicList from './components/DynamicList';
+import MessageCard from './components/MessageCard';
 import { useState } from 'react';
+import { fetchCall } from '../services/fetchSvc';
 
 function Main() {
     const [stopPhrasesList, setStopPhrasesList] = useState([]);
@@ -8,39 +10,71 @@ function Main() {
     const [temperature, setTemperature] = useState(1);
     const [topP, setTopP] = useState(1);
     const [presencePenalty, setPresencePenalty] = useState(0);
-    const [seed, setSeed] = useState('');
+    const [seed, setSeed] = useState(0);
     const [logprobs, setLogprobs] = useState(false);
     const [topLogprobs, setTopLogprobs] = useState(0);
-
-
-    const messages = [
+    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState([
         {
             role: 'system',
-            content: 'You are a university lecturer, teaching Persian litrature. Do not break character, reply as a the Persian professor.',
+            content: 'You are a flirty girl who has a crush on me and you are trying to get my attention by mentioning saucy things about yourself',
             name: 'Sue'
-        },
-        {
-            role: 'user',
-            content: 'Hi, who is author of Shahnameh?',
-            name: 'Babak'
-        },
-        {
-            role: 'assistant',
-            content: 'Shahnameh is a long epic poem written by the Persian poet Ferdowsi.',
-            name: 'Sue'
-        },
-        {
-            role: 'user',
-            content: 'Who is the original author of the material used by Ferdowsi for Shahnameh?',
-            name: 'Babak'
-        },
-    ]
+        }
+    ]);
+
+    const handleSendMessage = () => {
+        if (message) {
+            sendMessage()
+                .then(response => {
+                    setMessages([
+                        ...messages,
+                        { role: 'user', content: message, name: 'Babak' },
+                        { role: 'assistant', content: response.reply, name: 'Sue', details: response }
+                    ]);
+                    setMessage('');
+                })
+        }
+    }
+
+    const getMessagesObject = () => {
+        const messagesObject = [
+            ...messages.map(message => {
+                return { role: message.role, content: message.content, name: message.name };
+            }),
+            { role: 'user', content: message, name: 'Babak' }
+        ];
+        return messagesObject;
+    }
+
+    const sendMessage = async () => {
+        const requestBody = {
+            messages: getMessagesObject(),
+            stop: stopPhrasesList,
+            n: numberOfResponses,
+            frequency_penalty: frequencyPenalty,
+            temperature,
+            top_p: topP,
+            presence_penalty: presencePenalty,
+            seed,
+            logprobs
+        };
+
+        return fetchCall('api', requestBody, 'post');
+    }
+
+    const setSingleMessage = (idx, message) => {
+        setMessages([
+            ...messages.slice(0, idx),
+            message,
+            ...messages.slice(idx + 1)
+        ]);
+    }
 
     return (
         <div>
             <div className="container">
                 <div className="container p-2">
-                    <div><h1>Chat</h1></div>
+                    <div><h1>Advanced Chat Client</h1></div>
                 </div>
             </div>
 
@@ -111,22 +145,34 @@ function Main() {
                         </h2>
                         <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show">
                             <div className="accordion-body">
+                                <div className="container border mb-1 pb-2">
+                                    <div className='d-flex'><span className="fw-bold">System Messages</span></div>
+                                    {messages.filter(message => message.role === 'system').map((message, idx) =>
+                                        <MessageCard
+                                            key={idx}
+                                            messageIdx={messages.indexOf(message)}
+                                            message={message}
+                                            setSingleMessage={setSingleMessage}
+                                            colorClassName={'bg-light'} />
+                                    )}
+                                </div>
                                 <div className="container border overflow-auto" style={{ height: 550, paddingTop: 5 }}>
-                                    {messages.filter(message => message.role !== 'system').map((message, idx) => (
-                                        <>
-                                            <div className={`d-flex ${message.role === 'assistant' ? 'justify-content-start' : 'justify-content-end'}`}><span className="fw-bold">{message.name}</span></div>
-                                            <div key={idx} className={`d-flex ${message.role === 'assistant' ? 'justify-content-start' : 'justify-content-end'}`}>
-                                                <div className="d-inline-flex">
-                                                    <div className="card">
-                                                        <div className="card-body">
-                                                            {`${message.content}`}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <br />
-                                        </>
-                                    ))}
+                                    {messages.filter(message => message.role !== 'system').map((message, idx) =>
+                                        <MessageCard
+                                            key={idx}
+                                            messageIdx={messages.indexOf(message)}
+                                            message={message}
+                                            setSingleMessage={setSingleMessage}
+                                            justifyClassName={message.role === 'assistant' ? 'justify-content-start' : 'justify-content-end'}
+                                            colorClassName={message.role === 'assistant' ? 'text-dark bg-light' : ''} />
+                                    )}
+                                </div>
+                                <div className="container border mt-1">
+                                    <label for="textArea" class="form-label">Your Message:</label>
+                                    <div class="input-group">
+                                        <textarea class="form-control mb-1" id="textArea" rows="3" value={message} onChange={e => setMessage(e.target.value)} onKeyUp={e => e.key === 'Enter' ? handleSendMessage() : ""}></textarea>
+                                        <button class="btn btn-secondary" type="button" id="button-addon2" onClick={handleSendMessage}>Send</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

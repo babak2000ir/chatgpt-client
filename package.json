@@ -7,6 +7,5 @@
     "start": "cd dist && node server.cjs"
   },
   "dependencies": {
-    "openai": "^4.56.0"
   }
 }
