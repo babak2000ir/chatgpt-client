@@ -63,11 +63,17 @@ function Main() {
     }
 
     const setSingleMessage = (idx, message) => {
-        setMessages([
-            ...messages.slice(0, idx),
-            message,
-            ...messages.slice(idx + 1)
-        ]);
+        if (message)
+            setMessages([
+                ...messages.slice(0, idx),
+                message,
+                ...messages.slice(idx + 1)
+            ])
+        else
+            setMessages([
+                ...messages.slice(0, idx),
+                ...messages.slice(idx + 1)
+            ])
     }
 
     return (

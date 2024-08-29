@@ -9,6 +9,10 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
     const [collapseEdit, setCollapseEdit] = useState(true);
     const [textAreaValue, setTextAreaValue] = useState(message.content);
 
+    const handleDeleteButton = () => {
+        setSingleMessage(messageIdx, null);
+    }
+
     const handleEditButton = () => {
         saveMessage();
     }
@@ -49,16 +53,22 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
                                     </div>
                                 </>}
                             <div class="d-flex flex-row">
-                                <div class="d-flex">
+                                <div class="d-flex me-auto">
                                     <div class="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={handleEditButton}>
                                         <i class="bi bi-pen"></i>
                                     </div>
                                 </div>
 
                                 {message.details &&
-                                    <div class="d-flex ms-auto">
+                                    <div class="d-flex">
                                         <div class="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={() => setCollapseDetails(!collapseDetails)}>
                                             <i class="bi bi-three-dots-vertical"></i>
+                                        </div>
+                                    </div>}
+                                {message.role !== 'system' &&
+                                    <div class="d-flex">
+                                        <div class="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={() => handleDeleteButton()}>
+                                            <i class="bi bi-trash"></i>
                                         </div>
                                     </div>}
                             </div>
