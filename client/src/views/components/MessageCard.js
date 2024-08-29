@@ -1,13 +1,19 @@
 
 import { JSONTree } from 'react-json-tree';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import useDocumentClick from '../../hooks/useDocumentClick';
 
 function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName = '', colorClassName = '' }) {
+    const cardRef = useRef();
     const [collapseDetails, setCollapseDetails] = useState(true);
     const [collapseEdit, setCollapseEdit] = useState(true);
     const [textAreaValue, setTextAreaValue] = useState(message.content);
 
     const handleEditButton = () => {
+        saveMessage();
+    }
+
+    const saveMessage = () => {
         setCollapseEdit(!collapseEdit);
         if (!collapseEdit) {
             setSingleMessage(messageIdx, {
@@ -17,8 +23,18 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
         }
     }
 
+    useDocumentClick((event) => {
+        if (cardRef.current) {
+            if (!event.composedPath().includes(cardRef.current)) {
+                if (!collapseEdit) {
+                    saveMessage()
+                }
+            }
+        }
+    });
+
     return (
-        <>
+        <div ref={cardRef}>
             {message.role !== 'system' && <div className={`d-flex ${justifyClassName}`}><span className="fw-bold">{message.name}</span></div>}
             <div className={`${collapseEdit && 'd-flex'} ${justifyClassName} `}>
                 <div className={`${collapseEdit && 'd-inline-flex'}`}>
@@ -54,7 +70,7 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
