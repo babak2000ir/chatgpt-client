@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const useDocumentHook = (componentHandlerFunction) => {
+const useDocumentClick = (componentHandlerFunction) => {
     useEffect(() => {
         // Add event listener to the document
         const handleDocumentClick = (event) => {
@@ -16,4 +16,4 @@ const useDocumentHook = (componentHandlerFunction) => {
     }, [componentHandlerFunction]);
 };
 
-export default useDocumentHook;
+export default useDocumentClick;

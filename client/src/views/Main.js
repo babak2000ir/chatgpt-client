@@ -1,6 +1,7 @@
 import ParametersForm from './ParametersForm';
 import MessageCard from './components/MessageCard';
 import ChatEditor from './components/ChatEditor';
+import CharacterList from './CharacterList';
 import { useState } from 'react';
 import { fetchCall } from '../services/fetchSvc';
 
@@ -14,10 +15,10 @@ function Main() {
     const [parameters, setParameters] = useState({});
     const [characters, setCharacters] = useState([{
         name: 'Sue',
-        characterDescription: 'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
+        description: 'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
     }, {
         name: 'Rob',
-        characterDescription: 'You\'re an extremely aweful assistant, you go out of your way to make things worse.',
+        description: 'You\'re an extremely aweful assistant, you go out of your way to make things worse.',
     }]);
     const [messages, setMessages] = useState([
         {
@@ -100,15 +101,7 @@ function Main() {
                         </h2>
                         <div id="panelsStayOpen-collapseTwo" className="accordion-collapse collapse">
                             <div className="accordion-body">
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="name" placeholder="Enter character's name" />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="description" class="form-label">Character Description</label>
-                                    <textarea class="form-control" id="description" rows="5" placeholder="Enter character's description" />
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <CharacterList characters={characters} setCharacters={setCharacters} />
                             </div>
                         </div>
                     </div>

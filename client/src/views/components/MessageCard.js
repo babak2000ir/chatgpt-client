@@ -45,13 +45,12 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
                     <div className="card">
                         <div className={`card-body py-2 px-1 border rounded ${colorClassName}`}>
                             {collapseEdit ?
-                                <p><span style={{whiteSpace: 'pre-wrap'}}>{`${message.content}`}</span></p>
-                                : <>
-                                    <div className="form-floating input-group">
-                                        <textarea className="form-control mb-1" id="textArea" rows="3" value={textAreaValue} onChange={e => setTextAreaValue(e.target.value)} style={{ height: '100px' }}></textarea>
-                                        <button className="btn btn-secondary" type="button" id="button-addon2">Send</button>
-                                    </div>
-                                </>}
+                                <p><span style={{ whiteSpace: 'pre-wrap' }}>{`${message.content}`}</span></p>
+                                :
+                                <div className="form-floating input-group">
+                                    <textarea className="form-control mb-1" id="textArea" rows="3" value={textAreaValue} onChange={e => setTextAreaValue(e.target.value)} style={{ height: '100px' }}></textarea>
+                                    <button className="btn btn-secondary" type="button" id="button-addon2">Send</button>
+                                </div>}
                             <div className="d-flex flex-row">
                                 <div className="d-flex me-auto">
                                     <div className="btn btn-outline-secondary btn-sm border-0" type="button" aria-expanded="false" onClick={handleEditButton}>
