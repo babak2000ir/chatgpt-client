@@ -1,22 +1,27 @@
-import DynamicList from './components/DynamicList';
+import ParametersForm from './ParametersForm';
 import MessageCard from './components/MessageCard';
 import ChatEditor from './components/ChatEditor';
 import { useState } from 'react';
 import { fetchCall } from '../services/fetchSvc';
 
+const roles = {
+    ASSISTANT: 'assistant',
+    USER: 'user',
+    SYSTEM: 'system'
+};
+
 function Main() {
-    const [stopPhrasesList, setStopPhrasesList] = useState([]);
-    const [numberOfResponses, setNumberOfResponses] = useState(1);
-    const [frequencyPenalty, setFrequencyPenalty] = useState(0);
-    const [temperature, setTemperature] = useState(1);
-    const [topP, setTopP] = useState(1);
-    const [presencePenalty, setPresencePenalty] = useState(0);
-    const [seed, setSeed] = useState(0);
-    const [logprobs, setLogprobs] = useState(false);
-    const [topLogprobs, setTopLogprobs] = useState(0);
+    const [parameters, setParameters] = useState({});
+    const [characters, setCharacters] = useState([{
+        name: 'Sue',
+        characterDescription: 'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
+    }, {
+        name: 'Rob',
+        characterDescription: 'You\'re an extremely aweful assistant, you go out of your way to make things worse.',
+    }]);
     const [messages, setMessages] = useState([
         {
-            role: 'system',
+            role: roles.SYSTEM,
             content: 'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
             name: 'Assistant'
         }
@@ -38,14 +43,7 @@ function Main() {
     const sendMessage = async (message) => {
         const requestBody = {
             messages: getMessagesObject(message),
-            stop: stopPhrasesList,
-            n: numberOfResponses,
-            frequency_penalty: frequencyPenalty,
-            temperature,
-            top_p: topP,
-            presence_penalty: presencePenalty,
-            seed,
-            logprobs
+            ...parameters
         };
 
         return fetchCall('api', requestBody, 'post');
@@ -73,7 +71,7 @@ function Main() {
     }
 
     return (
-        <div>
+        <div className="m-1 p-1">
             <div className="container">
                 <div className="container p-2">
                     <div><h1>Advanced Chat Client</h1></div>
@@ -82,74 +80,50 @@ function Main() {
 
             <div className="container">
                 <div className="accordion accordion-flush" id="accordionPanelsStayOpenExample">
-                    <div className="accordion-item">
+                    <div className="accordion-item border">
+                        <h2 className="accordion-header">
+                            <button className="fw-bolder accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                                Parameters
+                            </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseThree" className="accordion-collapse collapse">
+                            <div className="accordion-body">
+                                <ParametersForm setParameters={setParameters} />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accordion-item border">
                         <h2 className="accordion-header">
                             <button className="fw-bolder accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                                Parameters
+                                Characters
                             </button>
                         </h2>
                         <div id="panelsStayOpen-collapseTwo" className="accordion-collapse collapse">
                             <div className="accordion-body">
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="n">Number of Responses</span>
-                                    <input type="number" className="form-control" placeholder="n" aria-label="N" aria-describedby="n" min="1" max="5" step="1" value={numberOfResponses} onChange={e => setNumberOfResponses(e.target.value)} />
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="name" placeholder="Enter character's name" />
                                 </div>
-
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="frequency_penalty">Frequency Penalty</span>
-                                    <input type="number" className="form-control" placeholder="Frequency Penalty" aria-label="Frequency Penalty" aria-describedby="frequency_penalty" min="-2" max="2" step="0.1" value={frequencyPenalty} onChange={e => setFrequencyPenalty(e.target.value)} />
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Character Description</label>
+                                    <textarea class="form-control" id="description" rows="5" placeholder="Enter character's description" />
                                 </div>
-
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="temperature">Temprature</span>
-                                    <input type="number" className="form-control" placeholder="Temperature" aria-label="Temperature" aria-describedby="temperature" min="0" max="1" step="0.1" value={temperature} onChange={e => setTemperature(e.target.value)} />
-                                </div>
-
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="top_p">Top P</span>
-                                    <input type="number" className="form-control" placeholder="Top P" aria-label="Top P" aria-describedby="top_p" min="0" max="1" step="0.1" value={topP} onChange={e => setTopP(e.target.value)} />
-                                </div>
-
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="presence_penalty">Presence Penalty</span>
-                                    <input type="number" className="form-control" placeholder="Presence Penalty" aria-label="Presence Penalty" aria-describedby="presence_penalty" min="-2" max="2" step="0.1" value={presencePenalty} onChange={e => setPresencePenalty(e.target.value)} />
-                                </div>
-
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="seed">Seed</span>
-                                    <input type="text" className="form-control" placeholder="Seed" aria-label="Seed" aria-describedby="seed" length="30" value={seed} onChange={e => setSeed(e.target.value)} />
-                                </div>
-
-                                <div className="input-group mb-3">
-                                    <DynamicList name="Stop" valueList={stopPhrasesList} setValueList={setStopPhrasesList} />
-                                </div>
-
-                                <div className="input-group mb-3 form-check">
-                                    <input className="form-check-input" type="checkbox" id="logprobs" value={logprobs} onChange={e => setLogprobs(e.target.checked)} />
-                                    <label className="form-check-label" htmlFor="logprobs">
-                                        &nbsp;Log Probs
-                                    </label>
-                                </div>
-
-                                {logprobs &&
-                                    <div className="input-group mb-3">
-                                        <span className="input-group-text" id="top_logprobs">Top Log Probs</span>
-                                        <input type="number" className="form-control" placeholder="Top Log Probs" aria-label="Top Log Probs" aria-describedby="top_logprobs" min="0" max="20" step="1" value={topLogprobs} onChange={e => setTopLogprobs(e.target.value)} />
-                                    </div>}
+                                <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </div>
                     </div>
-                    <div className="accordion-item">
+                    <div className="accordion-item border">
                         <h2 className="accordion-header">
                             <button className="fw-bolder accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
                                 Chat
                             </button>
                         </h2>
                         <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show">
+
                             <div className="accordion-body">
                                 <div className="container border mb-1 pb-2">
                                     <div className='d-flex'><span className="fw-bold">System Messages</span></div>
-                                    {messages.filter(message => message.role === 'system').map((message, idx) =>
+                                    {messages.filter(message => message.role === roles.SYSTEM).map((message, idx) =>
                                         <MessageCard
                                             key={idx}
                                             messageIdx={messages.indexOf(message)}
@@ -158,15 +132,16 @@ function Main() {
                                             colorClassName={'bg-light'} />
                                     )}
                                 </div>
+
                                 <div className="container border overflow-auto" style={{ height: 550, paddingTop: 5 }}>
-                                    {messages.filter(message => message.role !== 'system').map((message, idx) =>
+                                    {messages.filter(message => message.role !== roles.SYSTEM).map((message, idx) =>
                                         <MessageCard
                                             key={idx}
                                             messageIdx={messages.indexOf(message)}
                                             message={message}
                                             setSingleMessage={setSingleMessage}
-                                            justifyClassName={message.role === 'assistant' ? 'justify-content-start' : 'justify-content-end'}
-                                            colorClassName={message.role === 'assistant' ? 'text-dark bg-light' : ''} />
+                                            justifyClassName={message.role === roles.ASSISTANT ? 'justify-content-start' : 'justify-content-end'}
+                                            colorClassName={message.role === roles.ASSISTANT ? 'text-dark bg-light' : ''} />
                                     )}
                                 </div>
                                 <div className="container border mt-1 pb-1">
