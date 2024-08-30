@@ -27,6 +27,18 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
         }
     }
 
+    const handleTextAreaKeyUp = (event) => {
+        if (event.key === 'Escape') {
+            setTextAreaValue(message.content);
+            setCollapseEdit(!collapseEdit);
+        }
+    }
+
+    const handleDoubleClick = () => {
+        if (collapseEdit)
+            setCollapseEdit(!collapseEdit);
+    }
+
     useDocumentClick((event) => {
         if (cardRef.current) {
             if (!event.composedPath().includes(cardRef.current)) {
@@ -38,7 +50,7 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
     });
 
     return (
-        <div ref={cardRef}>
+        <div ref={cardRef} onDoubleClick={handleDoubleClick}>
             {message.role !== 'system' && <div className={`d-flex ${justifyClassName}`}><span className="fw-bold">{message.name}</span></div>}
             <div className={`${collapseEdit && 'd-flex'} ${justifyClassName} `}>
                 <div className={`${collapseEdit && 'd-inline-flex'}`}>
@@ -48,7 +60,14 @@ function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName =
                                 <p><span style={{ whiteSpace: 'pre-wrap' }}>{`${message.content}`}</span></p>
                                 :
                                 <div className="form-floating input-group">
-                                    <textarea className="form-control mb-1" id="textArea" rows="3" value={textAreaValue} onChange={e => setTextAreaValue(e.target.value)} style={{ height: '100px' }}></textarea>
+                                    <textarea
+                                        className="form-control mb-1"
+                                        id="textArea"
+                                        rows="3"
+                                        value={textAreaValue}
+                                        onChange={e => setTextAreaValue(e.target.value)}
+                                        style={{ height: '100px' }}
+                                        onKeyUp={handleTextAreaKeyUp} />
                                     <button className="btn btn-secondary" type="button" id="button-addon2">Send</button>
                                 </div>}
                             <div className="d-flex flex-row">
