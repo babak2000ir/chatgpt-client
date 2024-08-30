@@ -1,5 +1,6 @@
 import DynamicList from './components/DynamicList';
 import MessageCard from './components/MessageCard';
+import ChatEditor from './components/ChatEditor';
 import { useState } from 'react';
 import { fetchCall } from '../services/fetchSvc';
 
@@ -13,42 +14,30 @@ function Main() {
     const [seed, setSeed] = useState(0);
     const [logprobs, setLogprobs] = useState(false);
     const [topLogprobs, setTopLogprobs] = useState(0);
-    const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([
         {
             role: 'system',
-            content: 'You are a flirty girl who has a crush on me and you are trying to get my attention by mentioning saucy things about yourself',
-            name: 'Sue'
+            content: 'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
+            name: 'Assistant'
         }
     ]);
 
-    const handleSendMessage = () => {
-        if (message) {
-            sendMessage()
-                .then(response => {
-                    setMessages([
-                        ...messages,
-                        { role: 'user', content: message, name: 'Babak' },
-                        { role: 'assistant', content: response.reply, name: 'Sue', details: response }
-                    ]);
-                    setMessage('');
-                })
-        }
-    }
-
-    const getMessagesObject = () => {
+    const getMessagesObject = (message) => {
         const messagesObject = [
             ...messages.map(message => {
                 return { role: message.role, content: message.content, name: message.name };
             }),
-            { role: 'user', content: message, name: 'Babak' }
         ];
+
+        if (message)
+            messagesObject.push(message);
+
         return messagesObject;
     }
 
-    const sendMessage = async () => {
+    const sendMessage = async (message) => {
         const requestBody = {
-            messages: getMessagesObject(),
+            messages: getMessagesObject(message),
             stop: stopPhrasesList,
             n: numberOfResponses,
             frequency_penalty: frequencyPenalty,
@@ -74,6 +63,13 @@ function Main() {
                 ...messages.slice(0, idx),
                 ...messages.slice(idx + 1)
             ])
+    }
+
+    const addMessages = (messagesToSend) => {
+        setMessages([
+            ...messages,
+            ...messagesToSend
+        ]);
     }
 
     return (
@@ -173,12 +169,8 @@ function Main() {
                                             colorClassName={message.role === 'assistant' ? 'text-dark bg-light' : ''} />
                                     )}
                                 </div>
-                                <div className="container border mt-1">
-                                    <label htmlFor="textArea" className="form-label">Your Message:</label>
-                                    <div className="input-group">
-                                        <textarea className="form-control mb-1" id="textArea" rows="3" value={message} onChange={e => setMessage(e.target.value)} onKeyUp={e => e.key === 'Enter' ? handleSendMessage() : ""}></textarea>
-                                        <button className="btn btn-secondary" type="button" id="button-addon2" onClick={handleSendMessage}>Send</button>
-                                    </div>
+                                <div className="container border mt-1 pb-1">
+                                    <ChatEditor addMessages={addMessages} sendMessage={sendMessage} />
                                 </div>
                             </div>
                         </div>
