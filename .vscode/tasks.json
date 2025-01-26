@@ -14,7 +14,7 @@
 {
             "type": "npm",
             "path": "client",    
-            "script": "start",
+            "script": "dev",
             "problemMatcher": [],
             "label": "Client"
         },

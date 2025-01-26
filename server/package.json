@@ -3,8 +3,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "npm i && webpack --config ./webpack.config.js --mode=production",
-    "dev": "npm i && webpack --config ./webpack.config.js --mode=development"
+    "build": "npm i",
+    "publish": "npm i && webpack --config ./webpack.config.js --mode=production",
+    "dev": "npm i && webpack --config ./webpack.config.js --mode=development",
+    "clean": "rimraf node_modules && rimraf package-lock.json"
   },
   "author": "Babak Jahedmanesh <babak.jahedmanesh@gmail.com>",
   "license": "ISC",

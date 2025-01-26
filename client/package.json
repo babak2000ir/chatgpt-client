@@ -19,9 +19,11 @@
     "build:react": "react-scripts build",
     "test:react": "react-scripts test",
     "eject:react": "react-scripts eject",
-    "start": "npm i && craco start  --verbose",
-    "build": "craco build",
-    "test": "craco test"
+    "dev": "npm i && craco start  --verbose",
+    "build": "npm i",
+    "publish": "craco build",
+    "test": "craco test",
+    "clean": "rimraf node_modules && rimraf package-lock.json"
   },
   "eslintConfig": {
     "extends": [
