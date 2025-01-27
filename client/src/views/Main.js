@@ -47,7 +47,7 @@ function Main() {
             ...parameters
         };
 
-        return fetchCall('api', requestBody, 'post');
+        return fetchCall('api/chat', requestBody, 'post');
     }
 
     const setSingleMessage = (idx, message) => {

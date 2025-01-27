@@ -1,0 +1,31 @@
+{
+  "embeddings": [
+    {
+      "text": "hello",
+      "hash": "5d41402abc4b2a76b9719d911017c592",
+      "vector": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "text": "hello2",
+      "hash": "6e809cbda0732ac4845916a59016f954",
+      "vector": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "text": "hello3",
+      "hash": "7ce8be0fa3932e840f6a19c2b83e11ae",
+      "vector": [
+        1,
+        2,
+        3
+      ]
+    }
+  ]
+}

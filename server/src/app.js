@@ -10,14 +10,15 @@ import { fileURLToPath } from 'node:url';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import serve from 'koa-static';
-import Router from 'koa-router';
-import OpenAI from "openai";
+
+//import modules
+import api from './openai-api-router.js'; 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+//koa app
 const app = new Koa();
-const router = new Router();
 app.use(bodyParser());
 
 // logger
@@ -42,44 +43,7 @@ app.use(async (ctx, next) => {
   await next();
 });
 
-router.post('/api', async (ctx) => {
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-
-  const response = await openai.chat.completions.create({
-    ...ctx.request.body,
-    model: process.env.OPENAI_MODEL,
-    response_format: {
-      type: 'text'
-    },
-    stream: false,
-  }).withResponse()
-
-  //console.log("API response: " + api_reponse);
-
-  //put all key values of the headers in an array
-  const headers = Array.from(response.response.headers.entries()).map(([key, value]) => ({ key, value }));
-
-  ctx.body = {
-    headers,
-    response: response.data,
-    reply: response.data.choices?.[0]?.message.content || ""
-  };
-  /*   try {
-      for await (const chunk of stream) {
-        console.log(`\n${JSON.stringify(chunk)}\n`);
-        chunks.push(chunk);
-        api_reponse += chunk.choices[0]?.delta?.content || "";
-      }
-    } 
-    finally {
-      console.log("API response: " + api_reponse);
-      ctx.body = { api_reponse, chunks, stream };
-    }*/
-});
-
-app.use(router.routes());
+app.use(api.routes());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(serve(path.join(__dirname, '../../client/build')));
@@ -88,7 +52,7 @@ if (process.env.NODE_ENV === 'development') {
 else
   app.use(serve(path.join(__dirname, '../../dist/client')));
 
-const port = process.env.port || 8080;
+const port = process.env.serverport || 8080;
 
 Init()
   .then(() => {
@@ -99,8 +63,16 @@ Init()
   })
   .catch((error) => {
     console.log(`Initialization error: ${error}`);
-  });
+    const errorApp = new Koa();
+    errorApp.use(async (ctx) => {
+        ctx.status = 500;
+        ctx.body = `Initialization error: ${error}`;
+    });
 
+    errorApp.listen(port, () => {
+        console.log(`Error server is running on port ${port}`);
+    });
+  });
 
 async function Init() {
   console.log('Init Started.');
