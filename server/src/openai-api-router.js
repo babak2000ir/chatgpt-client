@@ -2,6 +2,10 @@ import Router from 'koa-router';
 import OpenAI from "openai";
 import { JSONFilePreset } from 'lowdb/node';
 import crypto from 'crypto';
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+
+const chunkSize = 200;
+const chunkOverlap = 50;
 
 //database
 const db = await JSONFilePreset('db.json', { embeddings: [] })
@@ -15,7 +19,7 @@ router.post('/chat', async (ctx) => {
 
     const response = await openai.chat.completions.create({
         ...ctx.request.body,
-        model: process.env.OPENAI_MODEL,
+        model: process.env.OPENAI_CHAT_MODEL,
         response_format: {
             type: 'text'
         },
@@ -34,40 +38,82 @@ router.post('/chat', async (ctx) => {
 
 router.post('/embedding', async (ctx) => {
     //Sanitize the input and generate hash
-
     const request = {
-        text: ctx.request.body?.text || '',
-        hash: crypto.createHash('md5').update(ctx.request.body?.text || '').digest('hex'),
-        vector: []
-    }
-    //validate
-    if (request.text)
-    {
-        //check table for existing hash
-        const existingEmbedding = db.data.embeddings.find(e => e.hash === request.hash);
-        if (!existingEmbedding)
-            await db.update(({ embeddings }) => embeddings.push({...request, vector: [1,2,3]}));
+        text: ctx.request.body?.text || ''
     }
 
-    ctx.body = db.data.embeddings;
+    if (request.text) {
+        await processText(request.text);
+    }
 
-    /* const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
+    ctx.body = db.data.embeddings.map(e => ({ hash: e.hash, text: e.text }));
+});
 
-    const response = await openai.embeddings.create({
-        ...ctx.request.body,
-        model: process.env.OPENAI_MODEL,
-    }).withResponse()
-
-    //put all key values of the headers in an array
-    const headers = Array.from(response.response.headers.entries()).map(([key, value]) => ({ key, value }));
+router.post('/similarity', async (ctx) => {
 
     ctx.body = {
         headers,
         response: response.data,
         reply: response.data.choices?.[0]?.message.content || ""
-    }; */
+    };
 });
+
+async function processText(text) {
+    const hash = crypto.createHash('md5').update(text).digest('hex')
+    const existingEmbedding = db.data.embeddings.find(e => e.hash === hash);
+    if (!existingEmbedding) {
+        /* //Tokenizing
+        const tokenizer = encoding_for_model(process.env.OPENAI_EMBEDDING_MODEL);
+        const tokens = tokenizer.encode(text); */
+
+        const splitter = new RecursiveCharacterTextSplitter({
+            chunkSize, // Max size of each chunk
+            chunkOverlap, // Overlap between chunks
+        });
+
+        const chunks = await splitter.splitText(text);
+
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
+
+        const processedChunks = [];
+        let idx = 0;
+        for (const chunk of chunks) {
+            const response = await openai.embeddings.create({
+                input: chunk,
+                encoding_format: 'float',
+                model: process.env.OPENAI_EMBEDDING_MODEL,
+            }).withResponse();
+        
+            processedChunks.push({
+                idx,
+                embedding: response.data.data[0].embedding,
+                chunk
+            });
+
+            idx++;
+        }
+
+        await db.update(({ embeddings }) => embeddings.push({
+            hash,
+            text,
+            chunks: processedChunks
+        }));
+    }
+}
+
+async function searchReviews(mainVector, searchVector, n = 3) {
+    // Add cosine similarity to each review
+    df.forEach((item) => {
+        item.similarity = cosineSimilarity(item.ada_embedding, mainVector);
+    });
+
+    // Sort by similarity in descending order
+    df.sort((a, b) => b.similarity - a.similarity);
+
+    // Return top N results
+    return df.slice(0, n);
+}
 
 export default router;
