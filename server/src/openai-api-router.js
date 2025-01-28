@@ -3,9 +3,11 @@ import OpenAI from "openai";
 import { JSONFilePreset } from 'lowdb/node';
 import crypto from 'crypto';
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import similarity from 'compute-cosine-similarity';
 
 const chunkSize = 200;
 const chunkOverlap = 50;
+const topN = 3;
 
 //database
 const db = await JSONFilePreset('db.json', { embeddings: [] })
@@ -47,15 +49,6 @@ router.post('/embedding', async (ctx) => {
     }
 
     ctx.body = db.data.embeddings.map(e => ({ hash: e.hash, text: e.text }));
-});
-
-router.post('/similarity', async (ctx) => {
-
-    ctx.body = {
-        headers,
-        response: response.data,
-        reply: response.data.choices?.[0]?.message.content || ""
-    };
 });
 
 async function processText(text) {
@@ -103,17 +96,36 @@ async function processText(text) {
     }
 }
 
-async function searchReviews(mainVector, searchVector, n = 3) {
-    // Add cosine similarity to each review
-    df.forEach((item) => {
-        item.similarity = cosineSimilarity(item.ada_embedding, mainVector);
-    });
+router.post('/similarity', async (ctx) => {
+    ctx.body = await getTopChunks(ctx.request.body.essayHash, ctx.request.body.searchHash);
+});
+
+async function getTopChunks(essayHash, searchHash, n = topN) {
+    const essayChunks = db.data.embeddings.find(e => e.hash === essayHash).chunks;
+    const searchChunks = db.data.embeddings.find(e => e.hash === searchHash).chunks;
+    
+    const chunkRank = [];
+
+    for (const searchChunk of searchChunks) {
+        for (const essayChunk of essayChunks) {
+            const chunkRankExist = chunkRank.find(e => e.essayChunk === essayChunk);
+            if (chunkRankExist) {
+                chunkRankExist.similarity += similarity(searchChunk.embedding, essayChunk.embedding)
+            }
+            else {
+                chunkRank.push({
+                    essayChunk,
+                    similarity: similarity(searchChunk.embedding, essayChunk.embedding)
+                });
+            }
+        }
+    }
 
     // Sort by similarity in descending order
-    df.sort((a, b) => b.similarity - a.similarity);
+    chunkRank.sort((a, b) => b.similarity - a.similarity);
 
     // Return top N results
-    return df.slice(0, n);
+    return chunkRank.slice(0, n);
 }
 
 export default router;
