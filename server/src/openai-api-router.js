@@ -58,7 +58,7 @@ router.post('/embedding', async (ctx) => {
         await processText(request.text);
     }
 
-    ctx.body = db.data.embeddings.filter(e => e.pending === false).map(e => ({ hash: e.hash, text: e.text }));
+    ctx.body = db.data.embeddings.map(e => ({ hash: e.hash, text: e.text, pending: e.pending }));
 });
 
 router.post('/similarity', async (ctx) => {
