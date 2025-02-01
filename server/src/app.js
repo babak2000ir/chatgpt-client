@@ -12,14 +12,18 @@ import bodyParser from 'koa-bodyparser';
 import serve from 'koa-static';
 
 //import modules
-import api from './openai-api-router.js'; 
+import api from './openai-api-router.js';
+import { startJobs } from './processing-agent.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 //koa app
 const app = new Koa();
-app.use(bodyParser());
+app.use(bodyParser({
+  enableTypes: ['json'],
+  jsonLimit: '100mb'
+}));
 
 // logger
 app.use(async (ctx, next) => {
@@ -65,12 +69,12 @@ Init()
     console.log(`Initialization error: ${error}`);
     const errorApp = new Koa();
     errorApp.use(async (ctx) => {
-        ctx.status = 500;
-        ctx.body = `Initialization error: ${error}`;
+      ctx.status = 500;
+      ctx.body = `Initialization error: ${error}`;
     });
 
     errorApp.listen(port, () => {
-        console.log(`Error server is running on port ${port}`);
+      console.log(`Error server is running on port ${port}`);
     });
   });
 
@@ -79,5 +83,6 @@ async function Init() {
 }
 
 async function initCompleted() {
+  startJobs();
   console.log('Init Completed.');
 }
