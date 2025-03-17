@@ -68,7 +68,7 @@ function Character({ character, characterIdx, setCharacter }) {
                     <div className="d-flex col-4">
                         <input
                             type="text"
-                            class="form-control"
+                            className="form-control"
                             id="name"
                             value={characterName}
                             onChange={e => setCharacterName(e.target.value)} 
@@ -76,7 +76,7 @@ function Character({ character, characterIdx, setCharacter }) {
                     </div>
                     <div className="d-flex">
                         <textarea
-                            class="form-control"
+                            className="form-control"
                             id="description"
                             rows="5"
                             value={characterDescription}

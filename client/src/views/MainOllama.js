@@ -13,7 +13,7 @@ const roles = {
 
 function MainOllama() {
     const [parameters, setParameters] = useState({});
-    const [defenitionMessages, setDefinitionMessages] = useState([
+    const [definitionMessages, setDefinitionMessages] = useState([
         'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
         'You\'re an extremely aweful assistant, you go out of your way to make things worse.',
         ':)'
@@ -99,7 +99,7 @@ function MainOllama() {
                         </h2>
                         <div id="panelsStayOpen-collapseTwo" className="accordion-collapse collapse">
                             <div className="accordion-body">
-                                <DefinitionMessagesList definitionMessages={dDefinitionMessages} setDefinitionMessages={setDefinitionMessages} />
+                                <DefinitionMessagesList definitionMessages={definitionMessages} setDefinitionMessages={setDefinitionMessages} />
                             </div>
                         </div>
                     </div>
