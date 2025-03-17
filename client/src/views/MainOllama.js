@@ -1,7 +1,7 @@
 import ParametersForm from './ParametersForm';
 import MessageCard from './components/MessageCard';
 import ChatEditor from './components/ChatEditor';
-import CharacterList from './CharacterList';
+import DefinitionMessagesList from './DefinitionMessagesList';
 import { useState } from 'react';
 import { fetchCall } from '../services/fetchSvc';
 
@@ -11,15 +11,13 @@ const roles = {
     SYSTEM: 'system'
 };
 
-function Main() {
+function MainOllama() {
     const [parameters, setParameters] = useState({});
-    const [characters, setCharacters] = useState([{
-        name: 'Sue',
-        description: 'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
-    }, {
-        name: 'Rob',
-        description: 'You\'re an extremely aweful assistant, you go out of your way to make things worse.',
-    }]);
+    const [defenitionMessages, setDefinitionMessages] = useState([
+        'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
+        'You\'re an extremely aweful assistant, you go out of your way to make things worse.',
+        ':)'
+    ]);
     const [messages, setMessages] = useState([
         {
             role: roles.SYSTEM,
@@ -47,7 +45,7 @@ function Main() {
             ...parameters
         };
 
-        return fetchCall('openaiApi/chat', requestBody, 'post');
+        return fetchCall('ollamaApi/chat', requestBody, 'post');
     }
 
     const setSingleMessage = (idx, message) => {
@@ -96,12 +94,12 @@ function Main() {
                     <div className="accordion-item border">
                         <h2 className="accordion-header">
                             <button className="fw-bolder accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                                Characters
+                                System Messages
                             </button>
                         </h2>
                         <div id="panelsStayOpen-collapseTwo" className="accordion-collapse collapse">
                             <div className="accordion-body">
-                                <CharacterList characters={characters} setCharacters={setCharacters} />
+                                <DefinitionMessagesList definitionMessages={dDefinitionMessages} setDefinitionMessages={setDefinitionMessages} />
                             </div>
                         </div>
                     </div>
@@ -149,4 +147,4 @@ function Main() {
     );
 }
 
-export default Main;
+export default MainOllama;

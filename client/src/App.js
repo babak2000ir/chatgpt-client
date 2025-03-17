@@ -1,4 +1,4 @@
-import Main from './views/Main';
+import MainOllama from './views/MainOllama';
 import NavBar from './views/NavBar';
 import Footer from './views/Footer';
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
@@ -11,7 +11,7 @@ function App() {
         <div className="col"><NavBar /></div>
       </div>
       <div className="row gx-0">
-        <div className="col"><Main /></div>
+        <div className="col"><MainOllama /></div>
       </div>
       <div className="row border">
         <div className="col"><Footer /></div>

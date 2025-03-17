@@ -12,7 +12,8 @@ import bodyParser from 'koa-bodyparser';
 import serve from 'koa-static';
 
 //import modules
-import api from './openai-api-router.js';
+import openaiApi from './openai-api-router.js';
+import ollamaApi from './ollama-api-router.js';
 import { startJobs } from './processing-agent.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -47,7 +48,8 @@ app.use(async (ctx, next) => {
   await next();
 });
 
-app.use(api.routes());
+app.use(openaiApi.routes());
+app.use(ollamaApi.routes());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(serve(path.join(__dirname, '../../client/build')));

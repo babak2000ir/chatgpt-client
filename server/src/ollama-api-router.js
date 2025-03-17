@@ -1,10 +1,6 @@
 import Router from 'koa-router';
 import OpenAI from "openai";
-import { JSONFilePreset } from 'lowdb/node';
-import crypto from 'crypto';
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import similarity from 'compute-cosine-similarity';
-import hnswlib from "hnswlib-node";
+//import { JSONFilePreset } from 'lowdb/node';
 
 const settings = {
     chunkOverlap: 100,
@@ -20,9 +16,9 @@ const settings = {
 }
 
 //database
-const db = await JSONFilePreset('db.json', { embeddings: [] })
+//const db = await JSONFilePreset('db.json', { embeddings: [] })
 
-const router = new Router({ prefix: '/openaiApi' });
+const router = new Router({ prefix: '/ollamaApi' });
 
 router.post('/chat', async (ctx) => {
     const openai = new OpenAI({
@@ -48,7 +44,7 @@ router.post('/chat', async (ctx) => {
     };
 });
 
-router.post('/embedding', async (ctx) => {
+/* router.post('/embedding', async (ctx) => {
     //Sanitize the input and generate hash
     const request = {
         text: ctx.request.body?.text || ''
@@ -61,7 +57,7 @@ router.post('/embedding', async (ctx) => {
     ctx.body = db.data.embeddings.map(e => ({ hash: e.hash, text: e.text, pending: e.pending }));
 });
 
-router.post('/similarity', async (ctx) => {
+ router.post('/similarity', async (ctx) => {
     ctx.body = await getTopChunksCosineSimilarity(ctx.request.body.essayHash, ctx.request.body.searchHash);
 
 });
@@ -70,13 +66,10 @@ router.post('/similarity2', async (ctx) => {
     ctx.body = await getTopChunksHNSW(ctx.request.body.essayHash, ctx.request.body.searchHash);
 });
 
-async function processText(text) {
+ async function processText(text) {
     const hash = crypto.createHash('md5').update(text).digest('hex')
     const existingEmbedding = db.data.embeddings.find(e => e.hash === hash);
     if (!existingEmbedding) {
-        /* //Tokenizing
-        const tokenizer = encoding_for_model(process.env.OPENAI_EMBEDDING_MODEL);
-        const tokens = tokenizer.encode(text); */
 
         if (text.length < settings.paragraph.letters) {
 
@@ -168,6 +161,6 @@ async function getTopChunksHNSW(essayHash, searchHash) {
 
     const similarityResult = hnsw.searchKnn(searchChunks[0].embedding, 3);
     return similarityResult.neighbors.map(sr => essayChunks[sr]);
-}
+} */
 
 export default router;
