@@ -14,29 +14,47 @@ const roles = {
 function MainOllama() {
     const [parameters, setParameters] = useState({});
     const [definitionMessages, setDefinitionMessages] = useState([
-        'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
-        'You\'re an extremely aweful assistant, you go out of your way to make things worse.',
-        ':)'
+       "Instructions",
+       "Character 1: Dana",
+       "Character 2: Robert"
     ]);
-    const [messages, setMessages] = useState([
-        {
-            role: roles.SYSTEM,
-            content: 'You\'re an extremely helpful assistant, you go out of your way to help. There is no negative sentence in your vocabulary.',
-            name: 'Assistant'
-        }
+    const [messages, setMessages] = useState([]);
+    const [characters, setCharacters] = useState([
+        "Dana",
+        "Robert"
     ]);
+    const [selectedCharacter, setSelectedCharacter] = useState(characters[0] || '');
 
     const getMessagesObject = (message) => {
         const messagesObject = [
-            ...messages.map(message => {
-                return { role: message.role, content: message.content, name: message.name };
-            }),
+            ...definitionMessages.map(message => ({ role: roles.SYSTEM, content: message })),
+            ...messages.map(message => ({ role: message.role, content: message.content })),
         ];
 
-        if (message)
+        if (message.content) {
             messagesObject.push(message);
+            if (selectedCharacter) {
+                messagesObject.push({ role: roles.USER, content: `You're generating a message from [[${nextCharacter()}]], start the response with:\n[[${nextCharacter()}]]:` });
+            }
+        }
+        else
+            if (selectedCharacter) {
+                messagesObject.push({ role: roles.USER, content: `You're generating a message from [[${selectedCharacter}]], start the response with:\n[[${selectedCharacter}]]:` });
+            }
 
         return messagesObject;
+    }
+
+    const nextCharacter = () => {
+        return characters[(characters.indexOf(selectedCharacter) + 1) % characters.length];
+    }
+
+    const getMessageCharacter = (message) => {
+        return message.content.match(/\[\[(.*?)\]\]/);
+    }
+
+    const getCharacterJustification = (character) => {
+        return characters.indexOf(character) % 2 ? 'justify-content-end' : 'justify-content-start';
     }
 
     const sendMessage = async (message) => {
@@ -45,7 +63,11 @@ function MainOllama() {
             ...parameters
         };
 
-        return fetchCall('ollamaApi/chat', requestBody, 'post');
+        return fetchCall('ollamaApi/chat', requestBody, 'post')
+            .then(response => {
+                //setSelectedCharacter(nextCharacter());
+                return response;
+            });
     }
 
     const setSingleMessage = (idx, message) => {
@@ -131,12 +153,17 @@ function MainOllama() {
                                             messageIdx={messages.indexOf(message)}
                                             message={message}
                                             setSingleMessage={setSingleMessage}
-                                            justifyClassName={message.role === roles.ASSISTANT ? 'justify-content-start' : 'justify-content-end'}
+                                            justifyClassName={getCharacterJustification(getMessageCharacter(message))}
                                             colorClassName={message.role === roles.ASSISTANT ? 'text-dark bg-light' : ''} />
                                     )}
                                 </div>
                                 <div className="container border mt-1 pb-1">
-                                    <ChatEditor addMessages={addMessages} sendMessage={sendMessage} />
+                                    <select onChange={(e) => setSelectedCharacter(e.target.value)} value={selectedCharacter}>
+                                        {characters.map((character, idx) =>
+                                            <option key={idx} defaultValue={selectedCharacter}>{character}</option>
+                                        )}
+                                    </select>
+                                    <ChatEditor addMessages={addMessages} sendMessage={sendMessage} selectedCharacter={selectedCharacter} />
                                 </div>
                             </div>
                         </div>

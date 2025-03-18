@@ -1,28 +1,28 @@
 
 import { useState } from 'react';
 
-function ChatEditor({ addMessages, sendMessage }) {
+function ChatEditor({ addMessages, sendMessage, selectedCharacter }) {
     const [message, setMessage] = useState('');
     const [inProgress, setInProgress] = useState(false);
 
     const handleSendMessage = () => {
         setInProgress(true);
-        let messageObject = null;
 
-        if (message.trim()) {
-            messageObject = { role: 'user', content: message, name: 'Babak' };
-        }
+        const messageObject = {
+            role: 'assistant',
+            content: message.trim() ? selectedCharacter ? `[[${selectedCharacter}]]: ${message.trim()}` : message.trim() : ''
+        };
 
         sendMessage(messageObject)
             .then(response => {
                 const messagesToAdd = [];
 
-                if (messageObject) {
+                if (messageObject.content) {
                     messagesToAdd.push(messageObject);
                     setMessage('');
                 }
 
-                messagesToAdd.push({ role: 'assistant', content: response.reply, name: 'Sue', details: response });
+                messagesToAdd.push({ role: 'assistant', content: response.reply, details: response });
                 addMessages(messagesToAdd);
                 setInProgress(false);
             })
@@ -30,6 +30,7 @@ function ChatEditor({ addMessages, sendMessage }) {
                 console.error('Error sending message:', error);
                 setInProgress(false);
             });
+
     }
 
     const handleTextAreaChange = (e) => {
@@ -47,7 +48,7 @@ function ChatEditor({ addMessages, sendMessage }) {
 
     return (
         <>
-            <label htmlFor="textArea" className="form-label fw-bold">Your Message:</label>
+            <label htmlFor="textArea" className="form-label fw-bold">'s Message:</label>
             <div className="pb-1">
                 <textarea
                     className="form-control mb-2"

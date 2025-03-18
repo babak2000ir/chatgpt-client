@@ -3,6 +3,8 @@ import { JSONTree } from 'react-json-tree';
 import { useState, useRef } from 'react';
 import useDocumentClick from '../../hooks/useDocumentClick';
 
+//.replace('\n','⏎')
+
 function MessageCard({ message, messageIdx, setSingleMessage, justifyClassName = '', colorClassName = '' }) {
     const cardRef = useRef();
     const [collapseDetails, setCollapseDetails] = useState(true);

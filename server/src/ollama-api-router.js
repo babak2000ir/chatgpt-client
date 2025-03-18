@@ -1,5 +1,6 @@
 import Router from 'koa-router';
-import OpenAI from "openai";
+import axios from 'axios';
+
 //import { JSONFilePreset } from 'lowdb/node';
 
 const settings = {
@@ -21,26 +22,24 @@ const settings = {
 const router = new Router({ prefix: '/ollamaApi' });
 
 router.post('/chat', async (ctx) => {
-    const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
+    const response = await axios.post('http://192.168.1.152:11434/api/chat', {
+        ...ctx.request.body,
+        stream: false,
+        model: 'wizardlm-uncensored',
+        stop: ['\n\n[[']
+    }, {
+        headers: {
+            'Content-Type': 'application/json',
+        }
     });
 
-    const response = await openai.chat.completions.create({
-        ...ctx.request.body,
-        model: process.env.OPENAI_CHAT_MODEL,
-        response_format: {
-            type: 'text'
-        },
-        stream: false,
-    }).withResponse()
-
     //put all key values of the headers in an array
-    const headers = Array.from(response.response.headers.entries()).map(([key, value]) => ({ key, value }));
+    const headers = Array.from(response.headers).map(([key, value]) => ({ key, value }));
 
     ctx.body = {
         headers,
         response: response.data,
-        reply: response.data.choices?.[0]?.message.content || ""
+        reply: response.data.message.content || ""
     };
 });
 
