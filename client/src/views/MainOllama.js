@@ -14,9 +14,7 @@ const roles = {
 function MainOllama() {
     const [parameters, setParameters] = useState({});
     const [definitionMessages, setDefinitionMessages] = useState([
-       "Instructions",
-       "Character 1: Dana",
-       "Character 2: Robert"
+       
     ]);
     const [messages, setMessages] = useState([]);
     const [characters, setCharacters] = useState([
@@ -24,6 +22,8 @@ function MainOllama() {
         "Robert"
     ]);
     const [selectedCharacter, setSelectedCharacter] = useState(characters[0] || '');
+    const [newMessage, setNewMessage] = useState('');
+    const [inProgress, setInProgress] = useState(false);
 
     const getMessagesObject = (message) => {
         const messagesObject = [
@@ -68,6 +68,34 @@ function MainOllama() {
                 //setSelectedCharacter(nextCharacter());
                 return response;
             });
+    }
+
+    const handleSendMessage = () => {
+        setInProgress(true);
+
+        const messageObject = {
+            role: 'assistant',
+            content: message.trim() ? selectedCharacter ? `[[${selectedCharacter}]]: ${message.trim()}` : message.trim() : ''
+        };
+
+        sendMessage(messageObject)
+            .then(response => {
+                const messagesToAdd = [];
+
+                if (messageObject.content) {
+                    messagesToAdd.push(messageObject);
+                    setMessage('');
+                }
+
+                messagesToAdd.push({ role: 'assistant', content: response.reply, details: response });
+                addMessages(messagesToAdd);
+                setInProgress(false);
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+                setInProgress(false);
+            });
+
     }
 
     const setSingleMessage = (idx, message) => {
@@ -163,7 +191,20 @@ function MainOllama() {
                                             <option key={idx} defaultValue={selectedCharacter}>{character}</option>
                                         )}
                                     </select>
-                                    <ChatEditor addMessages={addMessages} sendMessage={sendMessage} selectedCharacter={selectedCharacter} />
+                                    <div className="pb-1">
+                                        <label htmlFor="textArea" className="form-label fw-bold">'s Message:</label>
+                                        <ChatEditor message={newMessage} setMessage={setNewMessage} readOnly={inProgress} />
+                                        <div className="d-flex justify-content-end pe-2">
+                                            <button
+                                                className="btn btn-outline-dark"
+                                                type="button"
+                                                id="button-addon2"
+                                                disabled={inProgress}
+                                                onClick={handleSendMessage}>
+                                                Send
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
