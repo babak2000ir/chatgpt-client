@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import QuillEditor from './QuillEditor';
 
 function ChatEditor({ message, setMessage, readOnly }) {
@@ -9,11 +9,16 @@ function ChatEditor({ message, setMessage, readOnly }) {
         setMessage(quillRef.current.getText());
     }
 
+    useEffect(() => {
+        if (!message)
+            quillRef.current.setText(message);
+    }, [message]);
+
     return (
         <QuillEditor
             ref={quillRef}
             readOnly={readOnly}
-            defaultValue={message}
+            value={message}
             onTextChange={handleTextMessageChange}
         />
     );
